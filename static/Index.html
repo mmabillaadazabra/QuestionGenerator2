@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+<section>
+    <h1>Welcome to the Question Generator</h1>
+       <img src="/static/b79f9c4377814ffd1957a140b9b8b40d.gif"
+             alt="Question Generator picture" width="100%" height="50%" object-fit="contain" display="block" align-items="center">
+    </section>
+<br>
+
+<div class="container">
+    <h2> What would you like to learn today?</h2>
+<br>
+    <form action="/generate" method="post">
+        <div>
+            <label for="subject">Choose a Subject:</label>
+            <select id="subject" name="subject" required>
+                <option value="" disabled selected>--Choose a subject --</option>
+                <option value="math">Mathematics</option>
+                <option value="science">Science</option>
+                <option value="english">English</option>
+                <option value="history">History</option>
+                <option value="geography">Geography</option>
+                <option value="physics">Physics</option>
+                <option value="finance">Finance</option>
+            </select>
+        </div>
+            <br>
+        <div>
+            <label for="topic">Enter the Topic:</label>
+            <input type="text" id="topic" name="topic" required>
+        </div>
+        <br>
+        <div>
+            <label for="num_questions">Number of Questions:</label>
+            <input type="Number" id="num_questions" name="num_questions" required>
+        </div>
+        <br>
+        <br>
+        <input type="submit" value="Generate My Questions">
+    </form>
+    <br>
+    <br>
+    <br>
+<footer>
+    <p>Created By Karen Adazabra. All rights reserved.</p>
+    </footer>
+</div>
+</body>
+</html>

@@ -9,65 +9,55 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 STARTOCODE_QUESTION_GENERATOR = "https://startocode-ai-api-v1.fly.dev/ask"
 
-
 def build_page(results_html=""):
-    with open("static/index.html") as file:
-        html = file.read()
+    file = open("static/index.html")
+    html = file.read()
+    file.close()
 
-    return html.replace("<!-- RESULTS -->", results_html)
+    # put the results where the placeholder is
+    html = html.replace("<!-- RESULTS -->", results_html)
 
+    return html
 
 @app.get("/")
 def home():
     return HTMLResponse(build_page())
 
-
 @app.post("/generate")
-def generate(
-    subject: str = Form(...),
-    topic: str = Form(...),
-    num_questions: int = Form(...)
-):
-
-    response = requests.post(
-        STARTOCODE_QUESTION_GENERATOR,
-        json={"question": f"Generate {num_questions} questions about {topic} in {subject}"},
-        timeout=30
+def generate(subject: str = Form(), topic: str = Form(), num_questions: int = Form()):
+    intructions = (
+        f"Generate exactly {num_questions} questions about the topic "
+        f'"{topic}" in the subject "{subject}". '
+        f"Return ONLY a JSON array of strings, no other text. "
+        f'Example: ["Question 1?", "Question 2?"]'
     )
 
+    response = requests.post(
+        STARTOCODE_QUESTION_GENERATOR, json={"question": intructions}, timeout=30)
     data = response.json()
 
-    return HTMLResponse(f"""
-        <h2>DEBUG OUTPUT</h2>
-        <pre>{data}</pre>
-    """)
-    answers = data.get("answer", "")
-
-    if "used up your api credit" in answers.lower():
-        results_html = f"""
-        <div class="results">
-            <h2>API Error</h2>
-            <p style="color:red;">{answers}</p>
-        </div>
-        """
-        return HTMLResponse(build_page(results_html))
-
-
+    # parse the questions from the API response
+    answers = data["answer"]
     try:
         questions = json.loads(answers)
     except:
         questions = answers.split("\n")
 
+    # build the results list
     questions_html = ""
-
     for question in questions:
-        questions_html += f"<li>{question}</li>"
+        question = question.strip()
+        if question:
+            questions_html = questions_html + f"<li>{question}</li>"
 
     results_html = f"""
-    <div class="results">
-        <h2>{subject} - {topic}</h2>
-        <ol>{questions_html}</ol>
-    </div>
-    """
+       <div class="results">
+           <h2>{subject} - {topic}</h2>
+           <ol>{questions_html}</ol>
+       </div>
+       """
 
     return HTMLResponse(build_page(results_html))
+
+
+
